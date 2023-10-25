@@ -1,60 +1,31 @@
-#ifndef _UTILITY_H
+﻿#ifndef _UTILITY_H
 #define _UTILITY_H
+#define _CRT_SECURE_NO_WARNINGS
 #include <windows.h>
 #include <iostream>
+#include <iomanip>
 #include <string>
-#include <stdio.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctime>
+#include <unordered_map>
+#include <vector>
+#include <io.h>
+#include <wchar.h>
+#include <bitset>
 using namespace std;
-bool ReadSector(LPCWSTR  drive, int readPoint, BYTE sector[512])
-{
-    int retCode = 0;
-    DWORD bytesRead;
-    HANDLE device = NULL;
-
-    device = CreateFile(drive,    // Drive to op    en
-        GENERIC_READ,           // Access mode
-        FILE_SHARE_READ | FILE_SHARE_WRITE,        // Share Mode
-        NULL,                   // Security Descriptor
-        OPEN_EXISTING,          // How to create
-        0,                      // File attributes
-        NULL);                  // Handle to template
-
-    if (device == INVALID_HANDLE_VALUE) // Open Error
-    {
-        printf("CreateFile: %u\n", GetLastError());
-        return false;
-    }
-
-    SetFilePointer(device, readPoint, NULL, FILE_BEGIN);//Set a Point to Read
-
-    if (!ReadFile(device, sector, 512, &bytesRead, NULL))
-    {
-        return false;
-    }
-    else
-    {
-        return true;
-    }
-}
-unsigned long long little_endian_to_integer(BYTE* sector, int offset, int size) {
-    unsigned long long result = 0, temp;
-
-    for (int i = size - 1; i >= 0; i--) {
-        temp = int(sector[offset + i]);
-        result = (result << 8) + temp;
-    }
-
-    return result;
-}
-string toString(BYTE* sector, int offset, int size) {
-    char* temp = new char[size + 1]; 
-    memcpy(temp, sector + offset, size + 1); 
-    string result = temp; 
-    return result; 
-}
+// read one sector 
+void ReadSector(LPCWSTR  drive, unsigned int readPoint, BYTE* sector);
+// read multiple sectors 
+void ReadMultipleSector(LPCWSTR  drive, unsigned int readPoint, unsigned int numSec, BYTE* sector);
+// convert little endian bytes to integer
+unsigned long long little_endian_to_integer(BYTE* sector, int offset, int size);
+// convert little endian bytes to datetime
+char* little_endian_to_datetime(BYTE* sector, int offset);
+// convert little endian bytes to string
+string toString(BYTE* DATA, int offset, int number);
+wstring getAppOpen(wstring ext);
 #endif // !_UTILITY_H
